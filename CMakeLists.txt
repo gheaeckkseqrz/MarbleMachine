@@ -11,4 +11,5 @@ set (CMAKE_CXX_STANDARD 20)
 
 project(Marble)
 
+include_directories(eigen)
 add_executable(Marble main.cpp)
