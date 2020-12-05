@@ -29,6 +29,13 @@ public:
     _points = matrix * _points;
   }
 
+  void rotate(float angle, float x, float y, float z)
+  {
+    Eigen::Transform<float, 3, Eigen::Affine> transform(Eigen::AngleAxis<float>(angle, Eigen::Vector3f(x, y, z)));
+    Eigen::Matrix4f matrix = transform.matrix();
+    _points = matrix * _points;
+  }
+
   void toOBJ(std::string const &path)
   {
     std::ofstream f(path);
@@ -55,6 +62,11 @@ int main(int ac, char **av)
   Circle<360> c1(1);
   c1.translate(5, 0, 0);
   c1.toOBJ("translate_circle.obj");
+
+  Circle<360> c2(1);
+  c2.translate(5, 0, 0);
+  c2.rotate(M_PI / 2, 0, 1, 0);
+  c2.toOBJ("translate_rotated_circle.obj");
 
   return 0;
 }
