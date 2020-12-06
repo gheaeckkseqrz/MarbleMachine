@@ -36,10 +36,18 @@ public:
     _points = matrix * _points;
   }
 
-  void toOBJ(std::ostream &ss)
+  void toOBJ(std::ostream &ss, unsigned int index)
   {
     for (unsigned int i(0); i < Edges; ++i)
       ss << "v " << _points(0, i) << " " << _points(1, i) << " " << _points(2, i) << '\n';
+    if (index)
+    {
+      for (unsigned int i(0); i < Edges; ++i)
+      {
+        ss << "f " << index - Edges + i + 1 << " " << index - Edges + ((i + 1) % Edges) + 1 << " " << index + ((i + 1) % Edges) + 1 << '\n';
+        ss << "f " << index - Edges + i + 1 << " " << index + i + 1 << " " << index + ((i + 1) % Edges) + 1 << '\n';
+      }
+    }
   }
 
 private:
@@ -60,14 +68,14 @@ int main(int ac, char **av)
 
   std::ofstream obj("marble.obj");
 
-  Circle<360> c1(1);
+  Circle<4> c1(1);
   c1.translate(5, 0, 0);
-  c1.toOBJ(obj);
+  c1.toOBJ(obj, 0);
 
-  Circle<360> c2(1);
+  Circle<4> c2(1);
   c2.translate(5, 0, 0);
-  c2.rotate(M_PI / 2, 0, 1, 0);
-  c2.toOBJ(obj);
+  c2.rotate(M_PI / 8, 0, 1, 0);
+  c2.toOBJ(obj, 4);
 
   return 0;
 }
