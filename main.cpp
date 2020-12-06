@@ -1,6 +1,7 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 #include <Eigen/Core>
@@ -19,7 +20,6 @@ public:
       _points(2, i) = 0;                         // Z
       _points(3, i) = 1;                         // W
     }
-    std::cout << _points << std::endl;
   }
 
   void translate(float x, float y, float z)
@@ -36,11 +36,10 @@ public:
     _points = matrix * _points;
   }
 
-  void toOBJ(std::string const &path)
+  void toOBJ(std::ostream &ss)
   {
-    std::ofstream f(path);
     for (unsigned int i(0); i < Edges; ++i)
-      f << "v " << _points(0, i) << " " << _points(1, i) << " " << _points(2, i) << '\n';
+      ss << "v " << _points(0, i) << " " << _points(1, i) << " " << _points(2, i) << '\n';
   }
 
 private:
@@ -59,14 +58,16 @@ int main(int ac, char **av)
 {
   std::cout << "Eigen version: " << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << std::endl;
 
+  std::ofstream obj("marble.obj");
+
   Circle<360> c1(1);
   c1.translate(5, 0, 0);
-  c1.toOBJ("translate_circle.obj");
+  c1.toOBJ(obj);
 
   Circle<360> c2(1);
   c2.translate(5, 0, 0);
   c2.rotate(M_PI / 2, 0, 1, 0);
-  c2.toOBJ("translate_rotated_circle.obj");
+  c2.toOBJ(obj);
 
   return 0;
 }
