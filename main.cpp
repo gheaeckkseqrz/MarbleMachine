@@ -7,6 +7,11 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
+constexpr unsigned int CIRCLE_FACES = 60;
+constexpr float ANGLE_SECTION = 1;
+constexpr unsigned int NUMBER_SECTIONS = 360 * 10 / ANGLE_SECTION;
+constexpr float Y_INCREMENT = 10.0 * ANGLE_SECTION / 360;
+
 template <unsigned int Edges>
 class Circle
 {
@@ -15,10 +20,10 @@ public:
   {
     for (unsigned int i(0); i < Edges; ++i)
     {
-      _points(0, i) = cos(2 * M_PI * i / Edges); // X
-      _points(1, i) = sin(2 * M_PI * i / Edges); // Y
-      _points(2, i) = 0;                         // Z
-      _points(3, i) = 1;                         // W
+      _points(0, i) = cos(2 * M_PI * i / Edges) * radius; // X
+      _points(1, i) = sin(2 * M_PI * i / Edges) * radius; // Y
+      _points(2, i) = 0;                                  // Z
+      _points(3, i) = 1;                                  // W
     }
   }
 
@@ -68,14 +73,24 @@ int main(int ac, char **av)
 
   std::ofstream obj("marble.obj");
 
-  Circle<4> c1(1);
-  c1.translate(5, 0, 0);
-  c1.toOBJ(obj, 0);
+  unsigned int index(0);
+  for (unsigned int i(0); i <= NUMBER_SECTIONS; ++i)
+  {
+    Circle<CIRCLE_FACES> c(.5);
+    c.translate(50, i * Y_INCREMENT, 0);
+    c.rotate(2 * M_PI / 360 * ANGLE_SECTION * i, 0, 1, 0);
+    c.toOBJ(obj, index);
+    index += CIRCLE_FACES;
+  }
 
-  Circle<4> c2(1);
-  c2.translate(5, 0, 0);
-  c2.rotate(M_PI / 8, 0, 1, 0);
-  c2.toOBJ(obj, 4);
+  for (unsigned int i(0); i <= NUMBER_SECTIONS; ++i)
+  {
+    Circle<CIRCLE_FACES> c(.5);
+    c.translate(55, i * Y_INCREMENT + 2, 0);
+    c.rotate(2 * M_PI / 360 * ANGLE_SECTION * i, 0, 1, 0);
+    c.toOBJ(obj, i ? index : 0);
+    index += CIRCLE_FACES;
+  }
 
   return 0;
 }
